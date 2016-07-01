@@ -1,0 +1,227 @@
+html,
+body,
+ul {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+*,
+*:after,
+*:before{
+    font-family: Arial, sans-serif;
+    box-sizing: inherit;
+}
+
+.wrapper {
+    position: relative;
+}
+
+.dropdown {
+    display: inline-block;
+    zoom: 1;
+    font-size: 100%;
+    padding: 0.4em 0.3em 0.45em;
+    line-height: normal;
+    white-space: nowrap;
+    vertical-align: baseline;
+    text-align: center;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    background-color: #F1F1F1;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#F9F9F9),to(#ECECEC));
+    background-image: -webkit-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image: -moz-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image: -ms-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image: -o-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image: linear-gradient(top,#F9F9F9,#ECECEC);
+    border: 1px solid #c7c7c7;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    min-width: 130px;
+}
+
+.dropdown:hover {
+    cursor: pointer;
+    background: #ededed;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededed), color-stop(100%,#e0e0e0));
+    background: -webkit-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
+    background: -moz-linear-gradient(top, #ededed 0%, #e0e0e0 100%);
+    background: -ms-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
+    background: -o-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
+    background: linear-gradient(to bottom, #ededed 0%,#e0e0e0 100%);
+}
+
+.dropdown .toggle {
+    width: 20%;
+    height: 10px;
+    background: url(https://reportal.us.confirmit.com/cf_clientutil/images/arrow-collapsed.gif) center no-repeat;
+    display: inline-block;
+}
+
+.dropdown .toggle--down {
+    transform: rotate(90deg);
+    width: 20%;
+    height: 10px;
+    background: url(https://reportal.us.confirmit.com/cf_clientutil/images/arrow-collapsed.gif) center no-repeat;
+    display: inline-block;
+}
+
+.dropdown .text {
+    display: inline-block;
+    width: 80%;
+    text-align: left;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    font-size: 12px;
+    font-family: verdana, times new roman, arial;
+    font-weight: bold;
+    line-height: 15px;
+    text-align: left;
+    padding: 2px 0px 3px 2px;
+}
+
+.body {
+    background: #FFF;
+    border: 1px solid #c7c7c7;
+    -webkit-border-radius: 0px 6px 6px 6px;
+    -moz-border-radius: 0px 6px 6px 6px;
+    border-radius: 0px 6px 6px 6px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, .3);
+    position: absolute;
+    z-index: 9999;
+    width: 400px;
+    height: 328px;
+    top: 37px;
+    left: 0;
+}
+
+.body .header {
+    background-color: #e8e8e8;
+    border-bottom: 1px solid #c7c7c7;
+    padding: 10px 20px;
+}
+
+.header .search-input {
+    text-align: left;
+    width: 80%;
+    height: 26px;
+    border-radius: 3px;
+    border: 1px solid #ccc !important;
+    padding: 3px;
+    -webkit-appearance: textfield;
+}
+
+.body .list {
+    width: 100%;
+    height: 225px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.list .item {
+    width: 100%;
+    border-bottom: 1px solid #555;
+    list-style: none;
+    font-weight: bold;
+    font-size: 18px;
+    background-color: #fcfcfc;
+    border-bottom: 1px solid #ccc;
+    height: 31px;
+}
+
+.list .item .text {
+    color: #444;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 6px 0 7px 10px;
+    font-size: 10px;
+    /*width: 90%;*/
+    display: inline-block;
+    height: 31px;
+}
+
+.list .item .expand {
+    width: 10%;
+    height: 31px;
+    border-left: 1px solid #ccc;
+    display: inline-block;
+    background: url(https://reportal.us.confirmit.com/cf_clientutil/images/drilldown/arrow_grey_right.png) center no-repeat;
+    border-bottom: 1px solid #ccc;
+}
+
+.list .item .text:hover,
+.list .item .expand:hover {
+    background-color: #efefef;
+    border-bottom: 1px solid #ccc;
+}
+
+.list .item .text.active {
+    background-color: #d8ebf8;
+    border-bottom: 1px solid #ccc;
+}
+
+.body .footer {
+    text-align: right;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+}
+
+.footer .cancel {
+    color: #345FCB;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 12px;
+    font-size: 10px;
+
+}
+
+.footer .cancel:hover {
+    text-decoration: underline;
+    color: #ff6600;
+    cursor: pointer;
+}
+
+.footer .select {
+    background-color: #333;
+    color: #FFF;
+    border-bottom: none;
+    display: inline-block;
+    zoom: 1;
+    font-size: 100%;
+    padding: .4em 1em .45em;
+    line-height: normal;
+    white-space: nowrap;
+    vertical-align: baseline;
+    text-align: center;
+    cursor: pointer;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    border: 1px solid #999;
+    border: none rgba(0,0,0,0);
+    text-decoration: none;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
+    -webkit-transition: .1s linear -webkit-box-shadow;
+    -moz-transition: .1s linear -moz-box-shadow;
+    -ms-transition: .1s linear box-shadow;
+    -o-transition: .1s linear box-shadow;
+    transition: .1s linear box-shadow;
+    margin: 5px;
+    font-size: 10px;
+}
