@@ -1,7 +1,10 @@
+function BuildMap(data) { var map = {}; data.forEach(function(item) { map[item.title] = { title: item.title, parent: item.parent } }); return map; };
+function buildBreadCrumb(node, map) { var current = node; var breadcrumb = []; while (map.hasOwnProperty(current)) { breadcrumb.push(current); current = map[current].parent } breadcrumb.push('Top'); return breadcrumb.reverse(); }
+
 var data = [
     {
         title: "National",
-        parent: 'none',
+        parent: 'Top',
         hasChildren: true
     },
     {
@@ -30,6 +33,8 @@ var data = [
         hasChildren: false
     }
 ];
+
+var namedMap = BuildMap(data);
 
 var HierarchyComponent = React.createClass({
 
