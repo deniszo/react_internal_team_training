@@ -1,3 +1,5 @@
 Стартовый тренинг по реакту
 
-JSBIN: https://jsbin.com/yoguqogezi/2/edit?js,output
+Final JSBIN: https://jsbin.com/huyuvejutu/edit?js,output
+
+Starting JSBIN: https://jsbin.com/misugizicu/edit?js,output 

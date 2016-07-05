@@ -36,6 +36,8 @@ var data = (function() {
         }
     ];
 
+    var mappedData = BuildMap(data);
+
     function getItems() {
         return data;
     }
@@ -64,10 +66,15 @@ var data = (function() {
         return breadcrumb.reverse();
     }
 
+    function getParentName(node) {
+        return mappedData[node].parent;
+    }
+
     return {
         getItems: getItems,
+        getParentName: getParentName,
         buildBreadcrumb: function(node) {
-            return buildBreadCrumb(node, BuildMap(data));
+            return buildBreadCrumb(node, mappedData);
         }
     }
 
@@ -119,14 +126,20 @@ var HierarchyList = React.createClass({
     },
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ selectedNode: nextProps.initialNode, pendingNode: null, inputFilter: '', filterType: 'filterByParent' });
+        this.setState({
+            selectedNode: nextProps.initialNode,
+            pendingNode: null,
+            inputFilter: '',
+            filterType: 'filterByParent',
+            parentFilter: (nextProps.initialNode == 'National' ? 'National' : data.getParentName(nextProps.initialNode))
+        });
     },
 
     getItemCollection: function() {
 
         var self = this;
 
-        return this.props.hierarchy.
+        return self.props.hierarchy.
             filter(function(item) {
                 if (self.state.filterType == 'filterByParent') {
                     return item.parent === self.state.parentFilter;
@@ -163,7 +176,7 @@ var HierarchyList = React.createClass({
                     <BreadCrumb selected={ self.state.parentFilter } clickCrumb={ self.setFilterByParent } />
                 </div>
                 <ul className="list">
-                    { this.getItemCollection().
+                    { self.getItemCollection().
                         map(function(item, id) {
 
                             item.isSelected = (item.title === self.state.pendingNode || (!self.state.pendingNode && item.title === self.state.selectedNode));
@@ -214,7 +227,6 @@ function BreadCrumb(props) {
                 var clickHandler = ( isCurrentLevel ? null : function() { props.clickCrumb(item) } );
 
                 return <span key={idx} className={ className } onClick={ clickHandler }>{ item }</span>;
-
             });
     }
 
