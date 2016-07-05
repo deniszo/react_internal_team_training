@@ -99,11 +99,11 @@ var HierarchyComponent = React.createClass({
                     </div>
                     <ul className="list">
                         <li className="item">
-                            <div className="text" style="width: 90%">Best Buy</div>
+                            <div className="text" style={ { width: '90%' } }>Best Buy</div>
                             <div className="expand"></div>
                         </li>
                         <li className="item">
-                            <div className="text" style="width: 100%">Best Buy Mobile</div>
+                            <div className="text" style={ { width: '100%' } }>Best Buy Mobile</div>
                         </li>
                     </ul>
                     <div className="footer">
