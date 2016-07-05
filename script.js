@@ -1,62 +1,93 @@
-function BuildMap(data) { var map = {}; data.forEach(function(item) { map[item.title] = { title: item.title, parent: item.parent } }); return map; };
-function buildBreadCrumb(node, map) { var current = node; var breadcrumb = []; while (map.hasOwnProperty(current)) { breadcrumb.push(current); current = map[current].parent } breadcrumb.push('Top'); return breadcrumb.reverse(); }
+"use strict";
 
-var data = [
-    {
-        title: "National",
-        parent: 'Top',
-        hasChildren: true
-    },
-    {
-        title: "Best Buy",
-        parent: "National",
-        hasChildren: true
-    },
-    {
-        title: "Best Buy Mobile",
-        parent: "National",
-        hasChildren: false
-    },
-    {
-        title: "Western",
-        parent: "Best Buy",
-        hasChildren: false
-    },
-    {
-        title: "Central",
-        parent: "Best Buy",
-        hasChildren: false
-    },
-    {
-        title: "Eastern",
-        parent: "Best Buy",
-        hasChildren: false
+
+var data = (function() {
+
+    var data = [
+        {
+            title: "National",
+            parent: 'Top',
+            hasChildren: true
+        },
+        {
+            title: "Best Buy",
+            parent: "National",
+            hasChildren: true
+        },
+        {
+            title: "Best Buy Mobile",
+            parent: "National",
+            hasChildren: false
+        },
+        {
+            title: "Western",
+            parent: "Best Buy",
+            hasChildren: false
+        },
+        {
+            title: "Central",
+            parent: "Best Buy",
+            hasChildren: false
+        },
+        {
+            title: "Eastern",
+            parent: "Best Buy",
+            hasChildren: false
+        }
+    ];
+
+    function getItems() {
+        return data;
     }
-];
 
-var namedMap = BuildMap(data);
+    function BuildMap(data) {
+        var map = {};
+
+        data.forEach(function(item) {
+            map[item.title] = { title: item.title, parent: item.parent };
+        });
+
+        return map;
+    }
+
+    function buildBreadCrumb(node, map) {
+        var current = node;
+        var breadcrumb = [];
+
+        while (map.hasOwnProperty(current)) {
+            breadcrumb.push(current);
+            current = map[current].parent
+        }
+
+        breadcrumb.push('Top');
+
+        return breadcrumb.reverse();
+    }
+
+    return {
+        getItems: getItems,
+        buildBreadcrumb: function(node) {
+            return buildBreadCrumb(node, BuildMap(data));
+        }
+    }
+
+})();
 
 var HierarchyComponent = React.createClass({
 
     getInitialState: function() {
         return {
             collapsed: true,
-            currentLevel: 'National',
-            currentNode: {
-                title: "National",
-                parent: 'none',
-                hasChildren: true
-            }
+            text: 'National'
         }
     },
 
-    dropdownHandle: function() {
-        this.setState({ collapsed: !this.state.collapsed });
+    changeCollapsed: function() {
+        this.setState({ collapsed: !this.state.collapsed, text: this.state.text });
     },
 
-    setCurrentNode: function(node) {
-        console.log('Setting the current level to ', node);
-        this.setState({ collapsed: true, currentNode: node })
+    setText: function(txt) {
+        this.setState({ collapsed: true, text: txt });
     },
 
     render: function() {
@@ -65,11 +96,11 @@ var HierarchyComponent = React.createClass({
 
         return  (
             <div className="wrapper">
-                <div className="dropdown" onClick={ this.dropdownHandle }>
+                <div className="dropdown" onClick={ this.changeCollapsed }>
                     <div className={ toggleClass }></div>
-                    <div className="text">{ this.state.currentNode.title }</div>
+                    <div className="text">{ this.state.text }</div>
                 </div>
-                <HierarchyList show={ !this.state.collapsed } hierarchy={data} initialNode={ this.state.currentNode } levelHandler={this.setCurrentNode} />
+                <HierarchyList show={ !this.state.collapsed } hierarchy={ data.getItems() } initialNode={ this.state.text } levelHandler={ this.setText } />
             </div>
         );
     }
@@ -79,79 +110,42 @@ var HierarchyList = React.createClass({
 
     getInitialState: function() {
         return {
-            searchFilter: '',
-            parentFilter: this.props.initialNode.title,
             filterType: 'filterByParent',
-            currentSelection: this.props.initialNode,
-            pendingSelection: null
+            selectedNode: this.props.initialNode,
+            pendingNode: null,
+            parentFilter: this.props.initialNode,
+            inputFilter: ''
         }
     },
 
-    componentWillUpdate: function(nextProps, nextState) {
-        if (this.state.currentSelection !== this.props.initialNode && !nextState.pendingSelection) this.props.levelHandler(nextState.currentSelection);
-    },
-
-    setSelectedNode: function(node) {
-        this.setState({ pendingSelection: node });
-    },
-
-    clearSelectedNode: function() {
-        this.setState({ pendingSelection: null });
-    },
-
-    applySelectedNode: function() {
-        this.setState({ currentSelection: this.state.pendingSelection, pendingSelection: null });
-    },
-
-    hasPendingSelection: function(title) {
-        return (!!this.state.pendingSelection && this.state.pendingSelection.title == title);
-    },
-
-    hasCurrentSelection: function(title) {
-        return ((!this.state.pendingSelection && !!this.state.currentSelection) && this.state.currentSelection.title == title);
-    },
-
-    setFilterByParent: function(newParent) {
-        this.clearSearchValue();
-        this.setState({ filterType: 'filterByParent',  parentFilter: newParent.title });
-    },
-
-    filterByParent: function(item) {
-        return item.parent === this.state.parentFilter;
-    },
-
-    setSearchValue: function(val) {
-        this.setState({ searchValue: val });
-    },
-
-    clearSearchValue: function() {
-        this.setState({ searchValue: '' });
-    },
-
-    filterByTitle: function(item) {
-        return  item.title.toLowerCase().indexOf(this.state.searchValue.toLowerCase()) !== -1;
+    componentWillReceiveProps(nextProps) {
+        this.setState({ selectedNode: nextProps.initialNode, pendingNode: null, inputFilter: '', filterType: 'filterByParent' });
     },
 
     getItemCollection: function() {
 
+        var self = this;
+
         return this.props.hierarchy.
-        filter(this[this.state.filterType]);
+            filter(function(item) {
+                if (self.state.filterType == 'filterByParent') {
+                    return item.parent === self.state.parentFilter;
+                } else {
+                    return item.title.toLowerCase().indexOf(self.state.inputFilter.toLowerCase()) !== -1;
+                }
+            });
     },
 
-    cancelClickHandler: function(e) {
-        e.preventDefault();
-
-        console.log('canceling!');
-
-        this.clearSelectedNode();
-        this.clearSearchValue();
+    setSelectedNode: function(node) {
+        this.setState({ pendingNode: node });
     },
 
-    applyClickHandler: function(e) {
-        e.preventDefault();
+    setFilterByParent: function(newParent) {
+        this.setState({ filterType: 'filterByParent',  parentFilter: newParent, inputFilter: '' });
+    },
 
-        this.applySelectedNode();
-        this.clearSearchValue();
+    setSearchValue: function(val) {
+        this.setState({ filterType: 'filterByInput', inputFilter: val });
     },
 
     render: function() {
@@ -162,41 +156,32 @@ var HierarchyList = React.createClass({
             display: (this.props.show ? 'initial' : 'none')
         };
 
-        var nodeList = this.getItemCollection().
-        map(function(item, id) {
-            var clickButton = null;
-
-            if (item.hasChildren) clickButton = <NodeFilterButton clickHandler={ self.setFilterByParent.bind(self, item) } />;
-
-            var isSelected = self.hasPendingSelection(item.title) || self.hasCurrentSelection(item.title);
-
-            return(
-                <HierarchyNode key={id}
-                               isSelected={ isSelected }
-                               clickHandler={ self.setSelectedNode.bind(self, item) }
-                               node={item}>
-                    { clickButton }
-                </HierarchyNode>
-            );
-        });
-
         return (
             <div className="body" style={ style }>
                 <div className="header">
-                    <SearchFiled value={this.state.searchValue} changeHandler={this.setSearchValue}/>
+                    <SearchFiled value={ self.state.inputFilter } changeHandler={ self.setSearchValue } />
+                    <BreadCrumb selected={ self.state.parentFilter } clickCrumb={ self.setFilterByParent } />
                 </div>
                 <ul className="list">
-                    { nodeList }
+                    { this.getItemCollection().
+                        map(function(item, id) {
+
+                            item.isSelected = (item.title === self.state.pendingNode || (!self.state.pendingNode && item.title === self.state.selectedNode));
+
+                            return(
+                                <HierarchyNode key={id} selectNode={ self.setSelectedNode } drilldown={ self.setFilterByParent } node={ item } />
+                            )
+                        })
+                    }
                 </ul>
                 <div className="footer">
-                    <a className="cancel" onClick={this.cancelClickHandler} >Cancel</a>
-                    <button className="select" onClick={this.applyClickHandler} >Apply</button>
+                    <a className="cancel" onClick={ function(e) { e.preventDefault(); self.props.levelHandler(self.state.selectedNode) } }>Cancel</a>
+                    <button className="select" onClick={ function(e) { e.preventDefault(); self.props.levelHandler((self.state.pendingNode ? self.state.pendingNode : self.state.selectedNode)) } }>Apply</button>
                 </div>
             </div>
         );
     }
 });
-
 
 function SearchFiled(props) {
 
@@ -215,29 +200,67 @@ function SearchFiled(props) {
     );
 }
 
+function BreadCrumb(props) {
+
+    function buildCrumbs() {
+
+        return data.buildBreadcrumb(props.selected).
+            map(function(item, idx) {
+
+                var isCurrentLevel = props.selected === item;
+
+                var className = (isCurrentLevel ? 'selected' : '');
+
+                var clickHandler = ( isCurrentLevel ? null : function() { props.clickCrumb(item) } );
+
+                return <span key={idx} className={ className } onClick={ clickHandler }>{ item }</span>;
+
+            });
+    }
+
+    return (
+        <div className="breadcrumb">
+            { buildCrumbs() }
+        </div>
+    );
+
+}
 
 function HierarchyNode(props) {
+
+    function onClick(e) {
+        e.preventDefault();
+        props.selectNode(props.node.title);
+    }
 
     var style = {
         width: (props.node.hasChildren ? 90 : 100) + '%'
     };
 
-    var className = "text" + (props.isSelected ? ' active' : '');
+    var className = "text" + (props.node.isSelected ? ' active' : '');
+
+    var DrillDownButton = null;
+    if (props.node.hasChildren) DrillDownButton = <NodeFilterButton clickHandler={ props.drilldown } newParent={ props.node.title } />;
 
     return (
         <li className="item">
-            <div className={ className } style={ style } onClick={ props.clickHandler }>
+            <div className={ className } style={ style } onClick={ onClick }>
                 { props.node.title }
             </div>
-            {props.children}
+            { DrillDownButton }
         </li>
     );
 }
 
 function NodeFilterButton(props) {
 
+    function onClick(e) {
+        e.preventDefault();
+        props.clickHandler(props.newParent);
+    }
+
     return (
-        <div className="expand" onClick={ props.clickHandler }></div>
+        <div className="expand" onClick={ onClick }></div>
     );
 }
 
